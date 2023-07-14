@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora</title>
+</head>
+<!-- video aula : https://www.youtube.com/watch?v=42TShjXR0m0&ab_channel=GustavoNeitzke 
+
+para mais : https://developer.mozilla.org/pt-BR/docs/Web/HTML/Element/table
+
+ou : https://www.htmlprogressivo.net/2013/11/Atributos-colspan-e-rowspan-para-expandir-celulas-atraves-de-linhas-e-colunas-em-uma-tabela.html
+
+
+<TD> significa "Table Data" e define cada uma das células da tabela. Estas tags devem sempre surgir dentro de tags TR e, no seu interior, podem ser incluidos todos os elementos HTML que normalmente surgem no corpo de um documento.
+
+-->
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        
+    }
+    .fundo {
+        
+        text-align: center;
+        background-image: linear-gradient(45deg, black,crimson);
+        height: 100vh;
+        font: arial , sans-serif;
+        color: white;
+    }
+    .calculadora{
+        position: absolute;
+        background-color: rgba(0,0,0,0.9);
+        margin: 400px 50%;
+        transform: translate(-50%,-50%);
+        border-radius: 15px;
+        padding: 28px;
+        box-shadow: inset -0.5px 2px 20px white;
+        transition: all 0.3s ease-in-out;
+    }
+    .botao {
+        width: 50px;
+        height: 50px;
+
+        border-radius: 20px;
+
+        font-size: 22px;
+        font-weight: bold;
+        margin: 5px;
+
+        cursor:pointer;
+        background-color: rgba(31,31,31,99);
+        color: white;
+        border: none;
+        transition: all 0.5s ease-in-out;
+    }
+    .botao:hover {
+        border: dotted 3px red;
+        background-color: #00000088;
+        text-transform: lowercase;
+        color: red;
+
+        /*com apropriedade abaixo consigo fazer o efeito do botão subuir -8px no eixo y */
+        transform: translate(0px,-8px);
+    }
+    .calculadora:hover {
+        box-shadow: inset 2px 2px 20px gold;
+        background-color: rgba(0,0,0,0.7);
+    }
+    #result1{
+        /* display: flex; */
+        background-color: white;
+        color: red;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        height: 8vh;
+        justify-content: center;
+        align-items: center;
+        text-align: right;
+        font-size: 32px;
+        font-weight: bold;
+        
+    }
+    #result2 {
+        display: flex;
+        background-color: white;
+        color: red;
+       
+        margin-bottom: 10px;
+        border-radius: 5px;
+        height: 6vh;
+        
+        justify-content: center;
+        align-items: center;
+    }
+   
+
+
+</style>
+<body>
+    <div class="fundo">
+        <h1 class="h1fundo">Seja Bem vindo!</h1>
+        <div class="calculadora">
+            <h1>Caculadora</h1>
+            <p></p><p></p>
+            <table>
+                <tr>
+                    <td><button onclick="clearr()">C</button></td>
+                    <td><button onclick="back()"><</button></td>
+                    <td><button onclick="insert('/')">/</button></td>
+                    <td><button onclick="insert('*')">*</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="insert('7')">7</button></td>
+                    <td><button onclick="insert('8')">8</button></td>
+                    <td><button onclick="insert('9')">9</button></td>
+                    <td><button onclick="insert('-')">-</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="insert('4')">4</button></td>
+                    <td><button onclick="insert('5')">5</button></td>
+                    <td><button onclick="insert('6')">6</button></td>
+                    <td><button onclick="insert('+')">+</button></td>
+                </tr>
+                <tr>
+                    <td><button onclick="insert('1')">1</button></td>
+                    <td><button onclick="insert('2')">2</button></td>
+                    <td><button onclick="insert('3')">3</button></td>
+                    <td rowspan="2"><button onclick="calcular('=')" style="height: 106px;">=</button></td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button onclick="insert('0')" style="width: 109px;">0</button></td>
+                    <td><button onclick="insert('.')">.</button></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+<script>
+    //vou selecionar todos os botões transformalos em um array e dar uma class para todos os botoes
+    //Com o querySlectorall podemos selecionar bem precizamente o que queremos ! onde no caso foi todas as tags <botton> pois ficaria muito complicado addicionalos manualmente 
+    //Porem o querySlectorall retorna um nodelist e ficamos sem poder utilizar as funções de um array para isso temos que transformalo em um array o codigo abaixo resolve onosso problema!
+
+        
+    const btn =Array.from(document.querySelectorAll(' button '))
+    //Agora vou percorrer todos os botões ja que eles foram transformados eme um array e para isso vou usar o forEach
+    btn.forEach(botao => {botao.classList.add('botao')})
+
+    
+
+    //Agora vou selecionar minha tag<p> e vou transformalas e um array para conseguir add uma class
+
+       const p = document.getElementsByTagName('p')
+      
+       //Sabemos que getelementbyTagName retorna um htmlColection e como tambem não coneguimo sfazer muitas coisas com ese tipo de formatação devemos transformalo em um array
+       Array.from(p).forEach(e => e.classList.add('resultado'))
+
+
+       //No codigo abaixo selecionamos um elemento do tipo tag <p> onde queremos o segundo elemento do tipo <p> por isso do (2) e como o queryselectorAll retorna um nodelist apesar dele ter o forEach transformamos  e um array usando o Array.from e usamos o forEach para percorrer o array criado com os <p> e incluimos um Id="result2"
+
+     Array.from( document.querySelectorAll('p:nth-of-type(2)')).forEach(p2 => {p2 .setAttribute('id','result2')})
+
+    //  vamos fazer o mesmo para o primeiro <p>
+    Array.from( document.querySelectorAll('p:nth-of-type(1)')).forEach(p2 => {p2 .setAttribute('id','result1')})
+
+    //Agora vamos remover a class="resultado" do paragrafo1
+    Array.from(document.querySelectorAll('p:nth-of-type(1)')).forEach(e => e.classList.remove('resultado'))
+
+    //vou adicionar os eventos nos botões
+
+    Array.from( document.querySelectorAll('button')).forEach(p2 => {p2 .setAttribute('id','btn')})
+
+    
+
+    // video aula para adicionar eventos de um amaneira mais sofisticada preciso ver esssa aula
+
+
+    // https://www.youtube.com/watch?v=rKjEHhudwvU&ab_channel=CFBCursos
+
+    //===============================================================
+    //      VAMOS CRIAR AS FUNÇÕES PARA NOSSA FUNÇÃO FUNCIONAR
+    //===============================================================
+
+    //função para inserir os elementos na calculadora
+    function insert(props){
+       document.querySelector('#result1').innerHTML 
+       document.querySelector('#result1').innerHTML += props
+    }
+
+    //função para limpar
+    function clearr(){
+        document.querySelector('#result1').innerHTML = ""
+    }
+
+    //função para voltar
+    function back(){
+        //Aqui estamos usando a function SubString
+        // mais: https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/String/substring
+
+
+       var  result =  document.querySelector('#result1').innerHTML
+       document.querySelector('#result1').innerHTML = result.substring(0, result.length -1)
+    }
+    //calcula o valor
+
+    function calcular(){
+        var result = document.querySelector('#result1').innerHTML
+
+        //Aqui vamos ter uma estrutura condicional (if)(else)onde será testado se tiver algo dentro de result ele vai chamar a função eval()onde ele computa os valores de um astring e retorna um valor
+
+    //para mais informações acesse sobre a function eval(): https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/eval
+        if(result){
+            
+           var result = document.querySelector('#result1').innerHTML = eval(result)
+
+           //O codigo abaixo e para arredondar para   casas decimais então usamos o toFixed(0) mas posso colocar quantas casas for necessario ex 3
+
+        //    mais info: https://developer.mozilla.org/pt-BR/docs/Web/JavaScript/Reference/Global_Objects/Number/toFixed
+
+           document.querySelector('#result1').innerHTML = result.toFixed(0)
+          
+        }else{
+            document.querySelector('#result1').innerHTML = "Vazio!!!"
+        }
+
+    }
+    
+     
+    
+
+       
+       
+      
+        
+     
+
+  
+      
+  
+       
+
+   
+   
+   
+    
+
+
+
+</script>
+
+</body>
+</html>
